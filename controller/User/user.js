@@ -105,8 +105,8 @@ exports.updateUser = async (req, res, next) => {
         error.status = 422;
         throw error;
       }
-      
-      res.status(200).json({ message: 'User Fetched', user });
+
+      res.status(200).json({ message: 'User Updated', user });
     } catch (err) {
       if (!err.status) {
         err.status = 500;
