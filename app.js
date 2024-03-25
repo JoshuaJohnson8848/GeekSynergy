@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const app = express();
 
 const userRouter = require('./router/User/user');
-// const authRouter = require('./router/Auth')
+const authRouter = require('./router/Auth/auth');
 
 app.use(express.json());
 dotenv.config({ path: './config/.env' });
@@ -23,6 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/',authRouter);
 app.use('/user',userRouter);
 
 app.use((error, req, res, next) => {
