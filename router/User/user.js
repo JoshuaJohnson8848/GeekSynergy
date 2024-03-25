@@ -9,6 +9,8 @@ router.get('/:id', userController.getUserById);
 
 router.post('', userController.addUser);
 
+router.put('', userController.resetPass);
+
 router.put('/:id', userController.updateUser);
 
 router.delete('/:id', userController.deleteUser);

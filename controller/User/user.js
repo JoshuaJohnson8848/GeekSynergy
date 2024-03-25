@@ -91,7 +91,7 @@ exports.getUserById = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, email, pass, phone, proff } = req.body;
+    const { name, email, phone, proff } = req.body;
 
     const user = await User.findById(id);
 
@@ -102,7 +102,6 @@ exports.updateUser = async (req, res, next) => {
     }
     user.email = email;
     user.phone = phone;
-    user.password = pass;
     user.name = name;
     user.profession = proff;
 
@@ -136,6 +135,43 @@ exports.deleteUser = async (req, res, next) => {
     }
 
     res.status(200).json({ message: 'User Deleted', deleted: true });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.resetPass = async (req, res, next) => {
+  try {
+    const { email, pass } = req.body;
+
+    const existUser = await User.findOne({email: email});
+
+    if (!existUser) {
+      const error = new Error('User Not Found');
+      error.status = 404;
+      throw error;
+    }
+
+    let hashedPass = await bcrypt.hash(pass,12);
+    if (!hashedPass) {
+      const error = new Error('Password Error');
+      error.status = 422;
+      throw error;
+    }
+
+    existUser.password = hashedPass;
+    const resetedPass = await existUser.save();
+
+    if (!resetedPass) {
+      const error = new Error('Password Not Resetted');
+      error.status = 422;
+      throw error;
+    }
+
+    res.status(200).json({ message: 'Password Reseted', reset: true });
   } catch (err) {
     if (!err.status) {
       err.status = 500;
