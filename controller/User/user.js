@@ -81,36 +81,57 @@ exports.getUserById = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const { name, email, pass, phone, proff } = req.body;
-  
-      const user = await User.findById(id);
-  
-      if (!user) {
-        const error = new Error('User Not Found');
-        error.status = 404;
-        throw error;
-      }
-      user.email = email;
-      user.phone = phone;
-      user.password = pass;
-      user.name = name;
-      user.profession = proff;
+  try {
+    const { id } = req.params;
+    const { name, email, pass, phone, proff } = req.body;
 
-      const updatedUser = await user.save()
+    const user = await User.findById(id);
 
-      if (!updatedUser) {
-        const error = new Error('User Not Updated');
-        error.status = 422;
-        throw error;
-      }
-
-      res.status(200).json({ message: 'User Updated', user });
-    } catch (err) {
-      if (!err.status) {
-        err.status = 500;
-      }
-      next(err);
+    if (!user) {
+      const error = new Error('User Not Found');
+      error.status = 404;
+      throw error;
     }
-  };
+    user.email = email;
+    user.phone = phone;
+    user.password = pass;
+    user.name = name;
+    user.profession = proff;
+
+    const updatedUser = await user.save();
+
+    if (!updatedUser) {
+      const error = new Error('User Not Updated');
+      error.status = 422;
+      throw error;
+    }
+
+    res.status(200).json({ message: 'User Updated', user });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const userDeleted = await User.findByIdAndDelete(id);
+
+    if (!userDeleted) {
+      const error = new Error('User Not Deleted');
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({ message: 'User Deleted', deleted: true });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
