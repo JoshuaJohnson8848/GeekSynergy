@@ -5,11 +5,19 @@ exports.addUser = async (req, res, next) => {
   const { name, email, phone, pass, proff } = req.body;
   let hashedPass;
 
-  if (pass) {
-    hashedPass = await bcrypt.hash(pass, 12);
-  }
-
   try {
+    const existingUser = await User.findOne({email: email})
+  
+    if (existingUser) {
+      const error = new Error('User Already Exist');
+      error.status = 422;
+      throw error;
+    }
+  
+    if (pass) {
+      hashedPass = await bcrypt.hash(pass, 12);
+    }
+
     const user = new User({
       name: name,
       email: email,
